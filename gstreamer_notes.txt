@@ -1,0 +1,113 @@
+This is the code to stream from the navq
+
+sudo gst-launch-1.0 v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! vpuenc_h264 bitrate=500 ! rtph264pay ! udpsink host=192.168.1.10 port=5000 sync=false
+
+sudo gst-launch-1.0 v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! vpuenc_h264 bitrate=500 ! rtph264pay ! udpsink host=192.168.1.10 port=5000 sync=false
+
+
+Opencv test video streams
+sudo gst-launch-1.0 videotestsrc ! video/x-raw,width=640,height=480 !  autovideosink
+
+sudo gst-launch-1.0 videotestsrc ! video/x-raw,width=640,height=480,framerate=30/1 !  autovideosink
+
+
+
+
+open cv wants bgr format
+bgrx (bridge convert)
+
+
+
+info from Landon Haugh
+# Open camera and capture image form it
+cap = cv2.VideoCapture('v4l2src ! video/x-raw,width=640,height=480 ! decodebin ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
+ret,frame = cap.read()
+
+
+flip-method=2 (flips the camera upside down)
+
+Instrucions from Paul Mc
+camSet = 'v4l2src device=/dev/video1 ! video/x-raw,width=800,height=600, framerate=24/1 ! videoconvert ! appsink'
+
+
+A source is something like the camera
+a sink is where it is output too.
+if they are not compatable, you need to do conversions
+
+
+install     sudo apt-get install v4l-utils
+
+commands in gstreamer
+sudo gst-launch-1.0      this launches gtreamer
+!     this is to pipe from one thing to another
+!     connects one module to anothermodule
+audiotestsrc     this is an internal audio tone generator
+alsasink         this is an audio output
+gst-inspect-1.0   
+
+
+
+
+different parameters can be set, by finding the number within the elements.
+gst-inspect-1.0 audiotestsrc
+
+gst-launch-1.0 videotestsrc ! ximagesink
+gst-inspect-1.0 videotestsrc
+gst-inspect-1.0 ximagesink
+
+
+
+gst-launch-1.0 audiotestsrc wave=1 ! alsasink
+
+parameters requie a space in between them
+commas are used for setting capabilities, or variations on an element, ie width, height
+
+use the inspect function to find compatable input output prototocols
+audio/x-raw, format=u8
+
+
+autovideoconvert is a great module for converting video
+videoconvert is a manual video conversion module
+
+gst-launch-1.0 videotestsrc pattern=0 ! video/x-raw, format=BGR ! autovideoconvert ! videoconvert ! video/x-raw, width=1280, height=960 ! ximagesink
+
+name of rasp pi camera 
+nvarguscamerasrc
+nvarguscamerasrc sensor-id=0 ! video/x-raw
+
+also 
+v4l2src device=/dev/video1 ! video/x-raw,width=
+
+
+gst-launch-1.0 nvarguscamerasrc ! nvvidconv flip-method=2 ! video/x-raw,width=1280,height=840 ! autovideoconvert ! ximagesink 
+
+pixels 3264 pixels wide, 2464 high
+
+vpuenc_h246   h264 encoder
+
+h265parse     h265 parser
+
+video/h-265
+video/x-raw    
+video/x-h265
+
+mpeg4videoparse      MPEG 4 elementary stream parser
+
+udpsink    udp packet sender
+multiudpsink
+
+hlssink     http live streaming sink
+hlssink2    http live streaming sink 2
+
+rtph265depay      265 depayloader
+rtph265pay        265 payloader
+
+random notes from a youtuber
+better to use python string formatting method for the camSet
+    camSet_str = ('nvarguscamerasrc sensor-id={} ! '
+            'video/x-raw(memory:NVMM), width=3264, height=2464, framerate=21/1, format=NV12 ! '
+            'nvvidconv flip-method=2 ! '
+            'video/x-raw, width={}, height={}, format=BGRx ! '
+            'videoconvert ! '
+            'video/x-raw, format=BGR ! '
+            'appsink').format(sensor,width,height)
