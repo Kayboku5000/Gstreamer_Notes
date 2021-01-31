@@ -1,0 +1,66 @@
+sudo gst-launch-1.0 v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! vpuenc_h264 bitrate=500 ! rtph264pay ! udpsink host=192.168.1.10 port=5000 sync=false
+
+multicast from navq
+sudo gst-launch-1.0 v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! vpuenc_h264 bitrate=500 ! rtph264pay ! multiudpsink clients=192.168.1.12:5000,192.168.1.13:5000 sync=false
+
+
+autovideosink   could be a thing
+
+stream_video.sh
+
+
+
+cap = cv2.VideoCapture(0)
+
+cap = cv2.VideoCapture('v4l2src ! video/x-raw,width=640,height=480 ! decodebin ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
+
+
+
+sudo gst-launch-1.0 v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! vpuenc_h264 bitrate=500 ! rtph264pay ! udpsink host=192.168.1.12 port=5000 sync=false
+
+
+
+
+sudo cp MAVSDK/build/default/src/backend/src/mavsdk_server /usr/local/lib/python3.8/dist-packages/mavsdk-0.12.0.dist-info/bin/
+
+
+sudo cp mavsdk_server /usr/local/lib/python3.8/dist-packages/mavsdk/bin
+
+commands for mavsdk server python
+
+to start the server
+$ cd ~
+$ cd MAVSDK/build/default/src/backend/src/
+$ ./mavsdk_server -p 50051 serial:///dev/ttymxc2:921600
+
+to get more examples
+$ wget https://raw.githubusercontent.com/mavlink/MAVSDK-Python/master/examples/takeoff_and_land.py
+
+
+
+in python scripts 
+[c] Replace the following two code line (from: takeoff_and_land.py):
+drone = System()
+await drone.connect(system_address="udp://:14540")
+with:
+
+drone = System(mavsdk_server_address='localhost', port=50051)
+await drone.connect(system_address="serial:///dev/ttymxc2:921600")
+
+
+
+info pages
+https://www.hackster.io/mdobrea/c-and-python-interface-management-application-for-fmuk66-6dd935?f=1#_=_
+
+https://github.com/mavlink/MAVSDK-Python
+
+https://auterion.com/getting-started-with-mavsdk-python/
+
+https://auterion.com/mavsdk-python-easy-asyncio/
+
+https://www.hackster.io/physicsman/connecting-the-nxp-fmuk66-to-a-raspberry-pi-via-serial-39526e
+
+https://github.com/intel/mavlink-router
+
+
+
